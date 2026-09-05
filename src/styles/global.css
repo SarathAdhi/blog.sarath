@@ -138,8 +138,11 @@
   html {
     @apply font-sans;
   }
+}
 
-  .astro-code {
-    @apply text-secondary-foreground! bg-secondary!;
-  }
+/* Shiki - Dark */
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
 }

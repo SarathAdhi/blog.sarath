@@ -142,7 +142,7 @@ try {
 
 The important idea is:
 
-![API flow diagram](../../assets/offline-first-react-pwa/api-flow-diagram.png)
+![hybrid data strategy flow diagram](../../assets/offline-first-react-pwa/hybrid-data-strategy-flow.png)
 
 When online, the application always tries to get fresh data.
 
@@ -170,7 +170,7 @@ self.addEventListener("fetch", (event) => {
 
 The Service Worker and IndexedDB have different responsibilities:
 
-![Service vs Indexed diagram](../../assets/offline-first-react-pwa/service-vs-indexed.png)
+![Service vs Indexed diagram](../../assets/offline-first-react-pwa/offline-ready-application-flow.png)
 
 Keeping those responsibilities separate makes the architecture easier to reason about.
 
@@ -234,17 +234,7 @@ The simple implementation uses a network-first approach, but production applicat
 
 A dashboard could use **stale-while-revalidate**:
 
-```text
-Cached data
-    ↓
-Show immediately
-    ↓
-Fetch fresh data in background
-    ↓
-Update UI
-    ↓
-Update IndexedDB
-```
+![Cached first data flow diagram](../../assets/offline-first-react-pwa/cached-first-data-flow.png)
 
 This gives users an almost instant dashboard while still keeping the data fresh whenever the network is available.
 
@@ -263,23 +253,7 @@ For sensitive applications, it's also important to carefully consider which data
 
 The complete idea is quite small:
 
-```text
-                 React
-                   │
-                   ▼
-                API Call
-                   │
-             ┌─────┴─────┐
-             │           │
-          Online       Offline
-             │           │
-             ▼           ▼
-        Fresh Data   IndexedDB
-             │           │
-             └─────┬─────┘
-                   ▼
-                Dashboard
-```
+![Offline capable app data flow diagram](../../assets/offline-first-react-pwa/offline-capable-app-data-flow.png)
 
 A PWA doesn't require rebuilding your application from scratch.
 
