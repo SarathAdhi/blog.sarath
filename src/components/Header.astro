@@ -1,0 +1,60 @@
+---
+import { GITHUB_URL, PORTFOLIO_URL, SITE_TITLE, X_URL } from "../consts";
+---
+
+<header
+  class="relative z-10 mx-auto mt-4 w-[calc(100%-3rem)] max-w-280 rounded-lg border border-border bg-background/90 px-4 shadow-lg shadow-foreground/5 backdrop-blur max-md:w-[calc(100%-2rem)] md:px-6"
+>
+  <nav class="flex min-h-14 items-center justify-between">
+    <h2 class="m-0 text-base font-semibold tracking-tight">
+      <a class="no-underline" href="/">{SITE_TITLE}</a>
+    </h2>
+    <div class="flex items-center gap-1">
+      <a
+        class="px-2 py-2 text-xs font-semibold tracking-wide text-muted-foreground no-underline transition-colors hover:text-foreground md:px-3"
+        href={PORTFOLIO_URL}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span>Portfolio</span>
+      </a>
+      <a
+        class="px-2 py-2 text-xs font-semibold tracking-wide text-muted-foreground no-underline transition-colors hover:text-foreground md:px-3"
+        href={X_URL}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span>X</span>
+      </a>
+      <a
+        class="px-2 py-2 text-xs font-semibold tracking-wide text-muted-foreground no-underline transition-colors hover:text-foreground md:px-3"
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span>GitHub</span>
+      </a>
+      <button
+        class="ml-1 grid size-8 place-items-center rounded-lg border border-border bg-muted text-foreground transition-colors hover:bg-accent"
+        type="button"
+        aria-label="Switch to dark mode"
+        data-theme-toggle
+      >
+        <span aria-hidden="true">◐</span>
+      </button>
+    </div>
+  </nav>
+</header>
+<script>
+  const themeToggle = document.querySelector<HTMLButtonElement>(
+    "[data-theme-toggle]",
+  );
+  themeToggle?.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    themeToggle.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode",
+    );
+  });
+</script>
