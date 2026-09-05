@@ -138,4 +138,8 @@
   html {
     @apply font-sans;
   }
+
+  .astro-code {
+    @apply text-secondary-foreground! bg-secondary!;
+  }
 }
