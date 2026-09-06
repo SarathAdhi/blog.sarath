@@ -1,7 +1,6 @@
 ---
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
 import type { ImageMetadata } from "astro";
+import { ClientRouter } from "astro:transitions";
 import FallbackImage from "../assets/blog-placeholder-1.jpg";
 import { SITE_TITLE } from "../consts";
 import "../styles/global.css";
@@ -31,12 +30,31 @@ const { title, description, image = FallbackImage } = Astro.props;
 />
 <meta name="generator" content={Astro.generator} />
 
+<ClientRouter />
+
 <script is:inline>
   const savedTheme = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
     document.documentElement.classList.add("dark");
   }
+</script>
+
+<script is:inline>
+  const applyTheme = () => {
+    const theme = localStorage.getItem("theme") || "light";
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  // Run on first load
+  applyTheme();
+
+  // Run every time a view transition page swap happens
+  document.addEventListener("astro:after-swap", applyTheme);
 </script>
 
 <!-- Canonical URL -->

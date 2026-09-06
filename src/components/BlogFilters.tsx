@@ -57,7 +57,7 @@ export default function BlogFilters({ tags }: BlogFiltersProps) {
         <Input
           id="search-input"
           type="search"
-          placeholder="Try Astro or process"
+          placeholder="Try Astro or React"
           autoComplete="off"
           value={search}
           onChange={(event) => {

@@ -1,12 +1,10 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import BaseHead from "../components/BaseHead.astro";
 import BlogFilters from "../components/BlogFilters";
-import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
-import Header from "../components/Header.astro";
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import SiteLayout from "../layouts/SiteLayout.astro";
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -14,221 +12,143 @@ const posts = (await getCollection("blog")).sort(
 const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
 ---
 
-<!doctype html>
-<html lang="en" class="font-sans">
-  <head><BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} /></head>
-  <body class="min-w-80 bg-background text-foreground">
-    <Header />
-    <main
-      class="mx-auto w-[calc(100%-3rem)] max-w-280 max-md:w-[calc(100%-2rem)]"
-    >
-      <section class="mt-16 max-md:mt-8" aria-label="Blog filters">
-        <BlogFilters tags={tags} client:load />
-      </section>
-      <div
-        class="grid grid-cols-[minmax(0,7fr)_minmax(220px,3fr)] gap-[clamp(3rem,8vw,7rem)] py-20 max-md:grid-cols-1 max-md:gap-16 max-md:pt-14 max-md:pb-24"
-      >
-        <section class="post-list" aria-labelledby="posts-title">
-          <div class="mb-5 flex items-end justify-between gap-4">
-            <h2
-              class="m-0 font-heading text-[1.35rem] font-semibold tracking-tight"
-              id="posts-title"
-            >
-              <span id="result-count">{posts.length}</span> notes
-            </h2>
-            <span class="mb-1 h-px flex-1 bg-border"></span>
-          </div>
-          <div id="post-list">
-            {
-              posts.map((post, index) => (
-                <article
-                  class="post-row border-t border-border"
-                  data-title={post.data.title.toLowerCase()}
-                  data-description={post.data.description.toLowerCase()}
-                  data-tags={post.data.tags.join(" ").toLowerCase()}
-                  data-date={post.data.pubDate.valueOf()}
-                >
-                  <a
-                    class="group grid grid-cols-[9rem_minmax(0,1fr)_auto] items-center gap-5 py-5 text-inherit no-underline max-md:grid-cols-[6rem_minmax(0,1fr)_auto] max-md:gap-3"
-                    href={`/blog/${post.id}/`}
-                  >
-                    <div class="aspect-3/2 overflow-hidden rounded-md bg-muted">
-                      {post.data.heroImage && (
-                        <Image
-                          class="size-full object-cover saturate-75 transition duration-300 group-hover:scale-105 group-hover:saturate-100"
-                          src={post.data.heroImage}
-                          alt=""
-                          width={180}
-                          height={120}
-                        />
-                      )}
-                    </div>
-                    <div class="min-w-0">
-                      <div class="flex gap-2 text-xs text-muted-foreground">
-                        <>
-                          <span>
-                            <FormattedDate date={post.data.pubDate} />
-                          </span>
-                          <span class="text-border">-</span>
-                          <span>{post.data.author}</span>
-                        </>
-                      </div>
-                      <>
-                        <h3 class="mb-1 mt-2 font-heading text-xl font-semibold tracking-tight max-md:text-base">
-                          {post.data.title}
-                        </h3>
-                        <p class="m-0 max-w-2xl truncate text-sm leading-6 text-muted-foreground max-md:whitespace-normal">
-                          {post.data.description}
-                        </p>
-                      </>
-                      <div class="mt-3 flex flex-wrap gap-2">
-                        {post.data.tags.map((tag) => (
-                          <span class="rounded-full border border-border px-2 py-1 text-[0.65rem] text-muted-foreground">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <span
-                      class="self-start text-lg text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground"
-                      aria-hidden="true"
-                    >
-                      -&gt;
-                    </span>
-                  </a>
-                </article>
-              ))
-            }
-          </div>
-          <p id="empty-state" class="hidden py-12 text-muted-foreground">
-            No notes match those filters yet.
-          </p>
-        </section>
-
-        <aside class="flex flex-col gap-14">
-          <div class="border-t border-border pt-4">
-            <p
-              class="m-0 mb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted-foreground"
-            >
-              About the author
-            </p><div
-              class="mb-3 mt-6 font-heading text-6xl font-semibold leading-none -tracking-widest"
-            >
-              S<span class="text-muted-foreground">.</span>
-            </div><h2
-              class="m-0 font-heading text-[1.35rem] font-semibold tracking-tight"
-            >
-              {SITE_AUTHOR}
-            </h2><p class="mt-3 text-sm leading-7 text-muted-foreground">
-              I make software and write about the craft around it: tools,
-              interfaces, systems, and the occasional detour.
-            </p>
-          </div>
-          <div class="border-t border-border pt-4">
-            <p
-              class="m-0 mb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted-foreground"
-            >
-              Browse by topic
-            </p><div class="mt-4 flex flex-col">
-              {
-                tags.map((tag) => (
-                  <button
-                    class="group flex items-center justify-between border-0 border-b border-border bg-transparent py-3 text-left text-sm text-foreground"
-                    type="button"
-                    data-topic={tag.toLowerCase()}
-                  >
-                    {tag}
-                    <span class="text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1">
-                      -&gt;
-                    </span>
-                  </button>
-                ))
-              }
-            </div>
-          </div>
-          <div
-            class="border-y border-border py-4 font-heading text-lg leading-6 text-muted-foreground"
-          >
-            &quot;Make it useful, then make it clear.&quot;
-          </div>
-        </aside>
+<SiteLayout
+  title={SITE_TITLE}
+  description={SITE_DESCRIPTION}
+  mainClass="mx-auto w-[calc(100%-3rem)] max-w-280 max-md:w-[calc(100%-2rem)]"
+>
+  <section class="mt-16 max-md:mt-8" aria-label="Blog filters">
+    <BlogFilters tags={tags} client:load />
+  </section>
+  <div
+    class="grid grid-cols-[minmax(0,7fr)_minmax(220px,3fr)] gap-[clamp(3rem,8vw,7rem)] py-20 max-md:grid-cols-1 max-md:gap-16 max-md:pt-14 max-md:pb-24"
+  >
+    <section class="post-list" aria-labelledby="posts-title">
+      <div class="mb-5 flex items-end justify-between gap-4">
+        <h2
+          class="m-0 font-heading text-[1.35rem] font-semibold tracking-tight"
+          id="posts-title"
+        >
+          <span id="result-count">{posts.length}</span> notes
+        </h2>
+        <span class="mb-1 h-px flex-1 bg-border"></span>
       </div>
-    </main>
-    <Footer />
-    <script>
-      // @ts-nocheck
-      const rows = [...document.querySelectorAll(".post-row")] as HTMLElement[];
-      const list = document.querySelector("#post-list") as HTMLElement;
-      const count = document.querySelector("#result-count") as HTMLElement;
-      const emptyState = document.querySelector("#empty-state") as HTMLElement;
+      <div id="post-list">
+        {
+          posts.map((post, index) => (
+            <article
+              class="post-row border-t border-border"
+              data-post-row
+              data-title={post.data.title.toLowerCase()}
+              data-description={post.data.description.toLowerCase()}
+              data-tags={post.data.tags.join(" ").toLowerCase()}
+              data-date={post.data.pubDate.valueOf()}
+            >
+              <a
+                class="group grid grid-cols-[9rem_minmax(0,1fr)_auto] items-center gap-5 py-5 text-inherit no-underline max-md:grid-cols-[6rem_minmax(0,1fr)_auto] max-md:gap-3"
+                href={`/blog/${post.id}/`}
+              >
+                <div class="aspect-3/2 overflow-hidden rounded-md bg-muted">
+                  {post.data.heroImage && (
+                    <Image
+                      class="size-full object-cover saturate-75 transition duration-300 group-hover:scale-105 group-hover:saturate-100"
+                      src={post.data.heroImage}
+                      alt=""
+                      width={180}
+                      height={120}
+                    />
+                  )}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex gap-2 text-xs text-muted-foreground">
+                    <>
+                      <span>
+                        <FormattedDate date={post.data.pubDate} />
+                      </span>
+                      <span class="text-border">-</span>
+                      <span>{post.data.author}</span>
+                    </>
+                  </div>
+                  <>
+                    <h3 class="mb-1 mt-2 font-heading text-xl font-semibold tracking-tight max-md:text-base">
+                      {post.data.title}
+                    </h3>
+                    <p class="m-0 max-w-2xl truncate text-sm leading-6 text-muted-foreground max-md:whitespace-normal">
+                      {post.data.description}
+                    </p>
+                  </>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    {post.data.tags.map((tag) => (
+                      <span class="rounded-full border border-border px-2 py-1 text-[0.65rem] text-muted-foreground">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <span
+                  class="self-start text-lg text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground"
+                  aria-hidden="true"
+                >
+                  -&gt;
+                </span>
+              </a>
+            </article>
+          ))
+        }
+      </div>
+      <p id="empty-state" class="hidden py-12 text-muted-foreground">
+        No notes match those filters yet.
+      </p>
+    </section>
 
-      function updatePosts({ search = "", topic = "all", sort = "newest" }) {
-        const query = search.trim().toLowerCase();
-        const visibleRows = rows.filter((row) => {
-          const searchable = `${row.dataset.title ?? ""} ${row.dataset.description ?? ""} ${row.dataset.tags ?? ""}`;
-          return (
-            (!query || searchable.includes(query)) &&
-            (topic === "all" || (row.dataset.tags ?? "").includes(topic))
-          );
-        });
-        visibleRows.sort((a, b) =>
-          sort === "newest"
-            ? Number(b.dataset.date ?? 0) - Number(a.dataset.date ?? 0)
-            : Number(a.dataset.date ?? 0) - Number(b.dataset.date ?? 0),
-        );
-        rows.forEach((row) => {
-          row.hidden = !visibleRows.includes(row);
-        });
-        visibleRows.forEach((row) => list.append(row));
-        count.textContent = String(visibleRows.length);
-        emptyState.hidden = visibleRows.length !== 0;
-      }
+    <aside class="flex flex-col gap-14">
+      <div class="border-t border-border pt-4">
+        <p
+          class="m-0 mb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted-foreground"
+        >
+          About the author
+        </p><div
+          class="mb-3 mt-6 font-heading text-6xl font-semibold leading-none -tracking-widest"
+        >
+          S<span class="text-muted-foreground">.</span>
+        </div><h2
+          class="m-0 font-heading text-[1.35rem] font-semibold tracking-tight"
+        >
+          {SITE_AUTHOR}
+        </h2><p class="mt-3 text-sm leading-7 text-muted-foreground">
+          I make software and write about the craft around it: tools,
+          interfaces, systems, and the occasional detour.
+        </p>
+      </div>
+      <div class="border-t border-border pt-4">
+        <p
+          class="m-0 mb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted-foreground"
+        >
+          Browse by topic
+        </p><div class="mt-4 flex flex-col">
+          {
+            tags.map((tag) => (
+              <button
+                class="group flex items-center justify-between border-0 border-b border-border bg-transparent py-3 text-left text-sm text-foreground"
+                type="button"
+                data-topic={tag.toLowerCase()}
+              >
+                {tag}
+                <span class="text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1">
+                  -&gt;
+                </span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+      <div
+        class="border-y border-border py-4 font-heading text-lg leading-6 text-muted-foreground"
+      >
+        &quot;Make it useful, then make it clear.&quot;
+      </div>
+    </aside>
+  </div>
 
-      function readUrlFilters() {
-        const params = new URLSearchParams(window.location.search);
-        return {
-          search: params.get("q") ?? "",
-          topic: params.get("topic") ?? "all",
-          sort: params.get("sort") ?? "newest",
-        };
-      }
-
-      function writeUrlFilters({
-        search = "",
-        topic = "all",
-        sort = "newest",
-      }) {
-        const params = new URLSearchParams(window.location.search);
-        search.trim() ? params.set("q", search.trim()) : params.delete("q");
-        topic !== "all" ? params.set("topic", topic) : params.delete("topic");
-        sort !== "newest" ? params.set("sort", sort) : params.delete("sort");
-        window.history.replaceState(
-          {},
-          "",
-          `${window.location.pathname}${params.size ? `?${params}` : ""}`,
-        );
-      }
-
-      document.addEventListener("blog-filters-change", (event) => {
-        updatePosts(event.detail);
-        writeUrlFilters(event.detail);
-      });
-      updatePosts(readUrlFilters());
-      window.addEventListener("popstate", () => updatePosts(readUrlFilters()));
-      document.querySelectorAll("[data-topic]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const search = document.querySelector("#search-input")?.value ?? "";
-          document.dispatchEvent(
-            new CustomEvent("blog-filters-change", {
-              detail: {
-                search,
-                topic: button.dataset.topic ?? "all",
-                sort: "newest",
-              },
-            }),
-          );
-        });
-      });
-    </script>
-  </body>
-</html>
+  <script src="../scripts/archive.ts" data-astro-rerun></script>
+</SiteLayout>
