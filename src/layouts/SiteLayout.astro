@@ -25,10 +25,63 @@ const {
     <BaseHead title={title} description={description} image={image} />
   </head>
   <body class="min-w-80 bg-background text-foreground">
+    <div
+      class="reading-progress"
+      data-reading-progress
+      role="progressbar"
+      aria-label="Reading progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
+    </div>
     <Header />
     <main class={mainClass}>
       <slot />
     </main>
     <Footer />
+    <script is:inline data-astro-rerun>
+      window.__readingProgressCleanup?.();
+
+      const progressBar = document.querySelector("[data-reading-progress]");
+      let progressFrame = 0;
+
+      const updateReadingProgress = () => {
+        progressFrame = 0;
+        if (!progressBar) return;
+
+        const scrollableHeight =
+          document.documentElement.scrollHeight - window.innerHeight;
+        const progress =
+          scrollableHeight > 0
+            ? Math.min(window.scrollY / scrollableHeight, 1)
+            : 0;
+
+        progressBar.style.transform = `scaleX(${progress})`;
+        progressBar.setAttribute(
+          "aria-valuenow",
+          String(Math.round(progress * 100)),
+        );
+      };
+
+      const requestProgressUpdate = () => {
+        if (!progressFrame) {
+          progressFrame = window.requestAnimationFrame(updateReadingProgress);
+        }
+      };
+
+      window.addEventListener("scroll", requestProgressUpdate, {
+        passive: true,
+      });
+      window.addEventListener("resize", requestProgressUpdate, {
+        passive: true,
+      });
+      window.__readingProgressCleanup = () => {
+        window.removeEventListener("scroll", requestProgressUpdate);
+        window.removeEventListener("resize", requestProgressUpdate);
+        if (progressFrame) window.cancelAnimationFrame(progressFrame);
+      };
+      updateReadingProgress();
+    </script>
   </body>
 </html>
